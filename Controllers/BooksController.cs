@@ -84,7 +84,7 @@ namespace CoreSampleWebAPI.Controllers
         }
 
         [HttpPost("InsertText")]
-        public void InsertText([FromBody] string value)
+        public ActionResult<string> InsertText([FromBody] string value)
         {
             var rootfolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string LogsPath = System.IO.Path.Combine(rootfolder, "Logs");
@@ -97,6 +97,7 @@ namespace CoreSampleWebAPI.Controllers
             {
                 sr.WriteLine(value);
             }
+            return logFilepath;
 
         }
 
