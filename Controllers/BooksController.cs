@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Linq;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,6 +17,7 @@ namespace CoreSampleWebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Policy = "DaemonAppRole")]
     public class BooksController : ControllerBase
     {
         public readonly TestAPISampleContext _context;
