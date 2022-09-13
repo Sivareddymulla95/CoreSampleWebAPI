@@ -29,10 +29,17 @@ namespace CoreSampleWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                        .AddMicrosoftIdentityWebApi(Configuration);
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //            .AddMicrosoftIdentityWebApi(Configuration);
 
-            services.AddControllers();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(opt =>
+                        {
+                            opt.Audience = Configuration["AAD:ResourceId"];
+                            opt.Authority = $"{Configuration["AAD:InstanceId"]}{Configuration["AAD:TenantId"]}";
+                        });
+
+            services.AddControllers().AddNewtonsoftJson();
             services.AddDbContext<TestAPISampleContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("TestApi")));
         }

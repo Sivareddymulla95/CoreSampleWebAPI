@@ -10,6 +10,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,7 +18,7 @@ namespace CoreSampleWebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Policy = "DaemonAppRole")]
+    //[Authorize(Policy = "DaemonAppRole")]
     public class BooksController : ControllerBase
     {
         public readonly TestAPISampleContext _context;
@@ -86,20 +87,29 @@ namespace CoreSampleWebAPI.Controllers
         }
 
         [HttpPost("InsertText")]
-        public ActionResult<string> InsertText([FromBody] string value)
+        public ActionResult<HttpResponseMessage> InsertText([FromBody] dynamic value)
         {
-            var rootfolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string LogsPath = System.IO.Path.Combine(rootfolder, "Logs");
-            //Create Logs Folder if not exists
-            System.IO.Directory.CreateDirectory(LogsPath);
-
-            string logFile = "JSONData_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-            string logFilepath = System.IO.Path.Combine(LogsPath, logFile);
-            using (StreamWriter sr = new StreamWriter(logFilepath, true))
+            try
             {
-                sr.WriteLine(value);
+                var rootfolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string LogsPath = System.IO.Path.Combine(rootfolder, "Logs");
+                //Create Logs Folder if not exists
+                System.IO.Directory.CreateDirectory(LogsPath);
+
+                string logFile = "JSONData_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                string logFilepath = System.IO.Path.Combine(LogsPath, logFile);
+                using (StreamWriter sr = new StreamWriter(logFilepath, true))
+                {
+                    sr.WriteLine(value.ToString());
+                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            return logFilepath;
+            catch (Exception)
+            {
+
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
+
 
         }
 
